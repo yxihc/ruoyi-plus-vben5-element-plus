@@ -16,6 +16,7 @@ import {
   isFunction,
   isString,
   mapTree,
+  setObjToUrlParams,
 } from '@vben/utils';
 
 async function generateAccessible(
@@ -35,9 +36,16 @@ async function generateAccessible(
 
   // 动态添加到router实例内
   accessibleRoutes.forEach((route) => {
+    /**
+     * 外链不应该被添加到路由 由menu处理
+     */
+    if (/^https?:\/\//.test(route.path)) {
+      return;
+    }
     if (root && !route.meta?.noBasicLayout) {
       // 为了兼容之前的版本用法，如果包含子路由，则将component移除，以免出现多层BasicLayout
       // 如果你的项目已经跟进了本次修改，移除了所有自定义菜单首级的BasicLayout，可以将这段if代码删除
+      // TODO: 这里后期需要follow更新
       if (route.children && route.children.length > 0) {
         delete route.component;
       }
@@ -146,7 +154,14 @@ async function generateRoutes(
       return route;
     }
 
-    route.redirect = firstChild.path;
+    // 第一个路由如果有query参数 需要加上参数
+    const fistChildQuery = route.children[0]?.meta?.query;
+    // 根目录菜单固定只有一个children 且path为/ 不需要添加redirect
+    route.redirect =
+      fistChildQuery && route.children.length !== 1 && route.path !== '/'
+        ? setObjToUrlParams(firstChild.path, fistChildQuery)
+        : firstChild.path;
+
     return route;
   });
 

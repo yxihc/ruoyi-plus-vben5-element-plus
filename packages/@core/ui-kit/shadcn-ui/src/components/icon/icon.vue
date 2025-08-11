@@ -11,6 +11,8 @@ import {
   isString,
 } from '@vben-core/shared/utils';
 
+import SvgIcon from '../svg-icon/svg-icon.vue';
+// import { SvgIcon } from '@vben-core/shadcn-ui/components';
 const props = defineProps<{
   // 没有是否显示默认图标
   fallback?: boolean;
@@ -30,6 +32,7 @@ const isComponent = computed(() => {
 <template>
   <component :is="icon as Component" v-if="isComponent" v-bind="$attrs" />
   <img v-else-if="isRemoteIcon" :src="icon as string" v-bind="$attrs" />
-  <IconifyIcon v-else-if="icon" v-bind="$attrs" :icon="icon as string" />
+  <!--  <IconifyIcon v-else-if="icon" v-bind="$attrs" :icon="icon as string" />-->
+  <SvgIcon v-else-if="icon" v-bind="$attrs" :icon-class="icon as string" />
   <IconDefault v-else-if="fallback" v-bind="$attrs" />
 </template>

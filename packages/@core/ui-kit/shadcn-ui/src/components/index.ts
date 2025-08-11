@@ -10,6 +10,7 @@ export * from './expandable-arrow';
 export * from './full-screen';
 export * from './hover-card';
 export * from './icon';
+export * from './input-captcha';
 export * from './input-password';
 export * from './logo';
 export * from './pin-input';
@@ -20,4 +21,6 @@ export * from './segmented';
 export * from './select';
 export * from './spine-text';
 export * from './spinner';
+export * from './svg-icon';
+
 export * from './tooltip';

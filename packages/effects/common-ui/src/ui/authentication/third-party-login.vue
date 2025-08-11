@@ -11,9 +11,9 @@ defineOptions({
   name: 'ThirdPartyLogin',
 });
 
-const {
-  auth: { dingding: dingdingAuthConfig },
-} = useAppConfig(import.meta.env, import.meta.env.PROD);
+// const {
+//   auth: { dingding: dingdingAuthConfig },
+// } = useAppConfig(import.meta.env, import.meta.env.PROD);
 </script>
 
 <template>

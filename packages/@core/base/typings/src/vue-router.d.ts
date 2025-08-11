@@ -118,6 +118,12 @@ interface RouteMeta {
    */
   query?: Recordable;
   /**
+   * 管理员切换租户 该页面是否需要重定向到首页
+   * 用于区分带路由参数的页面 比如/oss/:id 这种路由是需要回到首页的
+   * 默认false
+   */
+  requireHomeRedirect?: boolean;
+  /**
    * 标题名称
    */
   title: string;
