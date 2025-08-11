@@ -83,11 +83,9 @@ export const useAuthStore = defineStore('auth', () => {
       await seeConnectionClose();
       await doLogout();
     } catch (error) {
-      console.error(error);
     } finally {
       resetAllStores();
       accessStore.setLoginExpired(false);
-
       // 回登陆页带上当前路由地址
       await router.replace({
         path: LOGIN_PATH,

@@ -56,7 +56,13 @@ export const useAppStore = defineStore('app', () => {
   const changeLanguage = (val: string): void => {
     language.value = val;
   };
-
+  /**
+   * 只需要空实现即可
+   * 否则会在退出登录清空所有
+   */
+  function $reset() {
+    // notificationList.value = [];
+  }
   return {
     device,
     sidebar,

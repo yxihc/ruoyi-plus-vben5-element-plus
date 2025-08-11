@@ -55,6 +55,10 @@ export function resetAllStores() {
   }
   const allStores = (pinia as any)._s;
   for (const [_key, store] of allStores) {
-    store.$reset();
+    try {
+      store.$reset();
+    } catch (error: any) {
+      console.error(error);
+    }
   }
 }

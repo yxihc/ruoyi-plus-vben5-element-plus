@@ -7,10 +7,7 @@ import { ElMessageBox } from 'element-plus';
 
 import { requestClient } from '#/api/request';
 
-const { clientId, sseEnable } = useAppConfig(
-  import.meta.env,
-  import.meta.env.PROD,
-);
+const { clientId, sseEnable } = useAppConfig(import.meta.env, import.meta.env.PROD);
 
 export namespace AuthApi {
   /**
@@ -84,8 +81,8 @@ export async function loginApi(data: AuthApi.LoginParams) {
     '/auth/login',
     { ...data, clientId },
     {
-      encrypt: true,
-    },
+      encrypt: true
+    }
   );
 }
 
@@ -94,13 +91,9 @@ export async function loginApi(data: AuthApi.LoginParams) {
  * @returns void
  */
 export async function doLogout() {
-  const resp = await requestClient.post<HttpResponse<void>>(
-    '/auth/logout',
-    null,
-    {
-      isTransformResponse: false,
-    },
-  );
+  const resp = await requestClient.post<HttpResponse<void>>('/auth/logout', null, {
+    isTransformResponse: false
+  });
   // 无奈之举 对错误用法的提示
   if (resp.code === 401 && import.meta.env.DEV) {
     ElMessageBox({
@@ -110,15 +103,14 @@ export async function doLogout() {
       <p>检测到你的logout接口返回了401, 导致前端一直进入循环逻辑???</p>
       ${Array.from(
         { length: 3 },
-        () =>
-          '<p class="font-bold text-red-500 text-[18px]">去检查你的后端配置!别盯着前端找问题了!这不是前端问题!</p>',
+        () => '<p class="font-bold text-red-500 text-[18px]">去检查你的后端配置!别盯着前端找问题了!这不是前端问题!</p>'
       ).join('')}
     </div>
   `,
       customClass: 'message-box-custom',
       showClose: true,
       dangerouslyUseHTMLString: true,
-      center: true,
+      center: true
     });
   }
 }
@@ -181,8 +173,8 @@ export function authBinding(source: string, tenantId: string) {
   return requestClient.get<string>(`/auth/binding/${source}`, {
     params: {
       domain: window.location.host,
-      tenantId,
-    },
+      tenantId
+    }
   });
 }
 
