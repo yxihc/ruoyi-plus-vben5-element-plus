@@ -71,11 +71,15 @@ export const useUserStore = defineStore('user', () => {
     removeToken();
   };
 
+  const $reset = async () => {
+    await logout();
+  };
   const setAvatar = (value: string) => {
     avatar.value = value;
   };
 
   return {
+    $reset,
     userId,
     tenantId,
     token,
