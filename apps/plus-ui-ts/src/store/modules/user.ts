@@ -72,7 +72,11 @@ export const useUserStore = defineStore('user', () => {
   };
 
   const $reset = async () => {
-    await logout();
+    // await logout();
+    token.value = '';
+    roles.value = [];
+    permissions.value = [];
+    removeToken();
   };
   const setAvatar = (value: string) => {
     avatar.value = value;

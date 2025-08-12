@@ -144,7 +144,7 @@ service.interceptors.response.use(
           //     }
           //   });
           // });
-          await useUserStore().logout();
+          useUserStore().$reset();
           await useAuthStore().logout();
           router.replace({
             path: '/auth/login',
