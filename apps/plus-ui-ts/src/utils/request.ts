@@ -11,6 +11,7 @@ import { getLanguage } from '@/lang';
 import { encryptBase64, encryptWithAes, generateAesKey, decryptWithAes, decryptBase64 } from '@/utils/crypto';
 import { encrypt, decrypt } from '@/utils/jsencrypt';
 import { router } from '@/router';
+import { nextTick } from 'vue';
 
 const encryptHeader = 'encrypt-key';
 let downloadLoadingInstance: LoadingInstance;
@@ -96,7 +97,8 @@ service.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
+import { useAccessStore } from '@vben/stores';
+import { useAuthStore } from '@/store';
 // 响应拦截器
 service.interceptors.response.use(
   (res: AxiosResponse) => {
@@ -132,19 +134,36 @@ service.interceptors.response.use(
           confirmButtonText: '重新登录',
           cancelButtonText: '取消',
           type: 'warning'
-        }).then(() => {
+        }).then(async () => {
           isRelogin.show = false;
-          useUserStore().logout().then(() => {
-            router.replace({
-              path: '/login',
-              query: {
-                redirect: encodeURIComponent(router.currentRoute.value.fullPath || '/')
-              }
-            })
+          // useUserStore().logout().then(() => {
+          //   router.replace({
+          //     path: '/auth/login',
+          //     query: {
+          //       redirect: encodeURIComponent(router.currentRoute.value.fullPath || '/')
+          //     }
+          //   });
+          // });
+          await useUserStore().logout();
+          await useAuthStore().logout();
+          router.replace({
+            path: '/auth/login',
+            query: {
+              redirect: encodeURIComponent(router.currentRoute.value.fullPath || '/')
+            }
           });
         }).catch(() => {
           isRelogin.show = false;
         });
+
+        // nextTick(()=>{
+        //   const userStore = useAccessStore();
+        //   userStore.loginExpired = true
+        // })
+
+        // const userStore = useAccessStore();
+        // userStore.loginExpired = true
+        // isRelogin.show = false;
       }
       return Promise.reject('无效的会话，或者会话已过期，请重新登录。');
     } else if (code === HttpStatus.SERVER_ERROR) {
@@ -173,36 +192,38 @@ service.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
 // 通用下载方法
 export function download(url: string, params: any, fileName: string) {
   downloadLoadingInstance = ElLoading.service({ text: '正在下载数据，请稍候', background: 'rgba(0, 0, 0, 0.7)' });
   // prettier-ignore
   return service.post(url, params, {
-      transformRequest: [
-        (params: any) => {
-          return tansParams(params);
-        }
-      ],
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      responseType: 'blob'
-    }).then(async (resp: any) => {
-      const isLogin = blobValidate(resp);
-      if (isLogin) {
-        const blob = new Blob([resp]);
-        FileSaver.saveAs(blob, fileName);
-      } else {
-        const blob = new Blob([resp]);
-        const resText = await blob.text();
-        const rspObj = JSON.parse(resText);
-        const errMsg = errorCode[rspObj.code] || rspObj.msg || errorCode['default'];
-        ElMessage.error(errMsg);
+    transformRequest: [
+      (params: any) => {
+        return tansParams(params);
       }
-      downloadLoadingInstance.close();
-    }).catch((r: any) => {
-      console.error(r);
-      ElMessage.error('下载文件出现错误，请联系管理员！');
-      downloadLoadingInstance.close();
-    });
+    ],
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    responseType: 'blob'
+  }).then(async (resp: any) => {
+    const isLogin = blobValidate(resp);
+    if (isLogin) {
+      const blob = new Blob([resp]);
+      FileSaver.saveAs(blob, fileName);
+    } else {
+      const blob = new Blob([resp]);
+      const resText = await blob.text();
+      const rspObj = JSON.parse(resText);
+      const errMsg = errorCode[rspObj.code] || rspObj.msg || errorCode['default'];
+      ElMessage.error(errMsg);
+    }
+    downloadLoadingInstance.close();
+  }).catch((r: any) => {
+    console.error(r);
+    ElMessage.error('下载文件出现错误，请联系管理员！');
+    downloadLoadingInstance.close();
+  });
 }
+
 // 导出 axios 实例
 export default service;
